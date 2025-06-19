@@ -464,10 +464,10 @@
 	style="background-image: url({CardBackground}); background-size: cover; background-position: center; background-repeat: no-repeat;"
 >
 	<div
-		class="absolute bottom-[-1rem] left-1/2 z-10 max-w-[276px] translate-x-1/2 gap-9 object-contain lg:bottom-[1rem] lg:right-[1rem] lg:-translate-x-0 xl:max-w-[522.2px]"
-	>
-		<img src={AultOnGold} alt="ault-on-gold" class="w-full" />
-	</div>
+	class="absolute bottom-[-1rem] z-10 mx-auto left-0 right-0 max-w-[276px] gap-9 object-contain lg:bottom-[1rem] lg:right-[1rem] lg:left-auto lg:mx-0 xl:max-w-[522.2px]"
+>
+	<img src={AultOnGold} alt="ault-on-gold" class="w-full" />
+</div>
 	<div
 		class="uppecase relative z-0 hidden text-[18vw] font-[200] tracking-[0.03em] text-[#181818] lg:block"
 	>
