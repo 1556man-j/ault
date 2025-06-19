@@ -154,8 +154,9 @@
 
 	<nav class="relative z-10 mx-5 flex items-center justify-between py-4 md:py-0">
 		<!-- Logo -->
-		<div>
-			<img src={Logo} alt="logo" class="w-28 md:w-32" />
+		<div class="cursor-pointer">
+			<a href="#"><img src={Logo} alt="logo" class="w-28 md:w-32" /></a>
+			
 		</div>
 
 		<!-- Desktop Links -->
@@ -234,8 +235,14 @@
 
 		<!-- Mobile Menu -->
 		{#if isOpen}
-			<div class="absolute left-0 top-full z-20 w-full bg-[#ffffff] p-5 shadow-lg lg:hidden">
-				<ul class="space-y-4 text-center text-[16px] font-medium text-black">
+			<div
+				class="fixed inset-0 z-[90] h-full w-[80%] max-w-[300px] overflow-y-auto bg-black p-5 shadow-lg lg:hidden pt-20"
+			>
+				<div class="mb-10 cursor-pointer ">
+					<a href="#"><img src={Logo} alt="logo" class="w-28 md:w-32" /></a>
+					
+				</div>
+				<ul class="space-y-6 text-left text-[16px] font-medium text-white">
 					<li>
 						<a
 							href="#how-it-works"
@@ -288,9 +295,9 @@
 	</nav>
 
 	<!-- hero content -->
-	<div class="relative z-10 mx-5 flex flex-col gap-5 text-center">
+	<div class="relative z-[1] mx-5 flex flex-col gap-5 text-center">
 		<div
-			class="lg:text[60px] 3xl:text-[96px] text-[40px] font-[200] uppercase leading-none tracking-tighter sm:text-[45px] xl:text-[70px]"
+			class="3xl:text-[96px] text-[40px] font-[200] uppercase leading-none tracking-tighter sm:text-[45px] lg:text-[60px] xl:text-[70px]"
 		>
 			timeless security,<br />modern convenience
 		</div>
@@ -453,20 +460,25 @@
 <!-- ============================Your Card section======================== -->
 <section
 	id="your-card"
-	class="item-center relative flex min-h-screen flex-col justify-center gap-20 overflow-hidden px-5 py-10 md:px-20 md:py-0"
+	class="item-center relative flex min-h-[664px] flex-col justify-center gap-20 overflow-hidden px-5 py-10 md:px-20 md:py-0 lg:min-h-screen"
 	style="background-image: url({CardBackground}); background-size: cover; background-position: center; background-repeat: no-repeat;"
 >
+	<div
+		class="absolute bottom-[-1rem] left-1/2 z-10 max-w-[276px] translate-x-1/2 gap-9 object-contain lg:bottom-[1rem] lg:right-[1rem] lg:-translate-x-0 xl:max-w-[522.2px]"
+	>
+		<img src={AultOnGold} alt="ault-on-gold" class="w-full" />
+	</div>
 	<div
 		class="uppecase relative z-0 hidden text-[18vw] font-[200] tracking-[0.03em] text-[#181818] lg:block"
 	>
 		LIMITLESS
 	</div>
-	<div class="relative">
+	<div class="relative mx-auto mb-auto lg:mx-0">
 		<div
-			class="lg:pb-50 relative relative z-20 mb-auto flex flex-col gap-8 p-5 text-center capitalize lg:mt-auto lg:p-20 lg:text-left"
+			class="lg:pb-50 relative z-20 mb-auto flex flex-col gap-8 p-5 pt-10 text-center capitalize lg:mt-auto lg:p-20 lg:pt-5 lg:text-left"
 		>
 			<h1
-				class="5xl:text-[64px] text-center text-[10px] font-[200] uppercase leading-tight tracking-tight lg:text-left lg:text-[50px] lg:leading-none"
+				class="5xl:text-[64px] text-center text-[25px] font-[200] uppercase leading-tight tracking-tight lg:text-left lg:text-[50px] lg:leading-none"
 			>
 				Gold In Your Hands, <br /> Anytime, Anywhere.
 			</h1>
@@ -475,23 +487,18 @@
 				Anywhere in the World.
 			</p>
 			<button
-				class="mx-0 h-[45px] w-[160px] cursor-pointer rounded-[10px] bg-[#D9D9D9] text-[15px] font-[442] uppercase text-black md:text-[20px] lg:h-[55px] lg:w-[211px]"
+				class="mx-auto h-[45px] w-[160px] cursor-pointer rounded-[10px] bg-[#D9D9D9] text-[15px] font-[442] uppercase text-black md:text-[20px] lg:mx-0 lg:h-[55px] lg:w-[211px]"
 				>Get your card</button
 			>
-		</div>
-		<div
-			class="absolute bottom-[-1rem] z-10 w-[267px] gap-9 object-contain lg:bottom-[3rem] lg:right-[6rem] xl:w-[522.2px]"
-		>
-			<img src={AultOnGold} alt="ault-on-gold" class="w-full" />
 		</div>
 	</div>
 </section>
 
 <!-- ============================Services section======================== -->
 <section
-	class="item-center relative flex min-h-screen flex-col justify-center gap-20 overflow-x-hidden bg-[#181818] px-5 py-10  md:py-20"
+	class="item-center relative flex min-h-screen flex-col justify-center gap-20 overflow-x-hidden bg-[#181818] px-5 py-10 md:py-20"
 >
-	<div class="flex flex-col gap-20 xl:px-60 lg:px-20">
+	<div class="flex flex-col gap-20 lg:px-20 xl:px-60">
 		<h1
 			class="lg:text[37px] 3xl:w-[1138px] 3xl:text-[48px] w-full text-[32px] font-[200] capitalize sm:text-[37px] lg:w-[809px]"
 		>
@@ -515,7 +522,7 @@
 		</div>
 
 		<!-- for desktop -->
-		<div class="hidden grid-cols-1 gap-20 md:grid-cols-2 md:grid md:grid-cols-3">
+		<div class="hidden grid-cols-1 gap-20 md:grid md:grid-cols-2 md:grid-cols-3">
 			{#each services as item}
 				<div class="flex h-full w-full flex-col gap-5 overflow-hidden">
 					<div class="h-full max-h-[286px] w-full overflow-hidden">
@@ -539,7 +546,7 @@
 	<div class="grid place-items-center gap-10 lg:grid-cols-2">
 		<!-- IMAGE SECTION -->
 		<div class="order-2 lg:order-1">
-			<div class="relative flex w-full max-h-[470px] lg:h-auto lg:w-[496px]">
+			<div class="relative flex max-h-[470px] w-full lg:h-auto lg:w-[496px]">
 				<img src={BenefitImg} alt="benefit-img" class="w-full lg:w-[367px]" />
 				<img
 					src={BenefitImg2}
@@ -555,7 +562,7 @@
 				As a valued member, you unlock a world of personalized travel, lifestyle, and financial
 				privileges, powered by our trusted partnership with Mastercard World Elite.
 			</h1>
-			<div class="block gap-2 lg:hidden ml-auto text-right">
+			<div class="ml-auto block gap-2 text-right lg:hidden">
 				<!-- Left Arrow -->
 				<button
 					on:click={scrollLeft}
