@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import Logo from '$lib/assets/logo.png';
 	import HeroBackground from '$lib/assets/herobg.jpg';
 	import Security from '$lib/assets/security.png';
@@ -19,6 +21,7 @@
 	import Partner4 from '$lib/assets/partner4.png';
 	import Partner5 from '$lib/assets/partner5.png';
 	import FooterLogo from '$lib/assets/footer-logo.png';
+	import PartnerImg from '$lib/assets/partner-img.jpg';
 	import Gold from '$lib/assets/golden.png';
 	import HowItWorksImg from '$lib/assets/how-it-works.png';
 	import CardBackground from '$lib/assets/card-bg.png';
@@ -28,7 +31,16 @@
 
 	let isOpen = false;
 
-	const features = [
+	$: if (browser) {
+		if (isOpen) {
+			document.body.classList.add('overflow-hidden');
+		} else {
+			document.body.classList.remove('overflow-hidden');
+		}
+	}
+
+	// =====================features===============
+	export let features = [
 		{
 			title: 'Security',
 			image: Security,
@@ -48,7 +60,42 @@
 				'Seamless Access To Your Funds. Withdraw, Transfer, Or Spend Your Allocated Gold Assets Wherever And Whenever Needed.'
 		}
 	];
+	let currentIndex = 0;
+	let perView = 1;
+	let startX = 0;
+	let slideCount = 1;
 
+	const updatePerView = () => {
+		perView = window.innerWidth >= 640 ? 2 : 1;
+		slideCount = Math.ceil(features.length / perView);
+	};
+
+	const next = () => (currentIndex = (currentIndex + 1) % slideCount);
+	const prev = () => (currentIndex = (currentIndex - 1 + slideCount) % slideCount);
+	const goTo = (i) => (currentIndex = i);
+
+	const handleTouchStart = (e) => (startX = e.touches[0].clientX);
+	const handleTouchEnd = (e) => {
+		let dx = e.changedTouches[0].clientX - startX;
+		if (dx > 50) prev();
+		else if (dx < -50) next();
+	};
+
+	onMount(() => {
+		updatePerView();
+		window.addEventListener('resize', updatePerView);
+
+		updateStepView();
+		window.addEventListener('resize', updateStepView);
+
+		updateServiceView();
+		window.addEventListener('resize', updateServiceView);
+
+		updateBenefitView();
+		window.addEventListener('resize', updateBenefitView);
+	});
+
+	// =======================step carousel ===============
 	const steps = [
 		{
 			title: 'Step 1: Invitation & Consultation',
@@ -76,6 +123,28 @@
 		}
 	];
 
+	let stepsIndex = 0;
+	let stepPerView = 1;
+	let stepSlideCount = 1;
+	let stepStartX = 0;
+
+	const updateStepView = () => {
+		stepPerView = window.innerWidth >= 768 ? 2 : 1;
+		stepSlideCount = Math.ceil(steps.length / stepPerView);
+	};
+
+	const goToStep = (i) => (stepsIndex = i);
+	const nextStep = () => (stepsIndex = (stepsIndex + 1) % stepSlideCount);
+	const prevStep = () => (stepsIndex = (stepsIndex - 1 + stepSlideCount) % stepSlideCount);
+
+	const handleStepStart = (e) => (stepStartX = e.touches[0].clientX);
+	const handleStepEnd = (e) => {
+		let dx = e.changedTouches[0].clientX - stepStartX;
+		if (dx > 50) prevStep();
+		else if (dx < -50) nextStep();
+	};
+
+	// ======================services carousel ===================
 	const services = [
 		{
 			title: '24/7 Concierge:',
@@ -93,7 +162,29 @@
 			image: Service3
 		}
 	];
+	let servicesIndex = 0;
+	let perViewService = 1;
+	let serviceSlideCount = 1;
+	let serviceStartX = 0;
 
+	const updateServiceView = () => {
+		perViewService = window.innerWidth >= 768 ? 2 : 1;
+		serviceSlideCount = Math.ceil(services.length / perViewService);
+	};
+
+	const goToService = (i) => (servicesIndex = i);
+	const nextService = () => (servicesIndex = (servicesIndex + 1) % serviceSlideCount);
+	const prevService = () =>
+		(servicesIndex = (servicesIndex - 1 + serviceSlideCount) % serviceSlideCount);
+
+	const handleServiceStart = (e) => (serviceStartX = e.touches[0].clientX);
+	const handleServiceEnd = (e) => {
+		let dx = e.changedTouches[0].clientX - serviceStartX;
+		if (dx > 50) prevService();
+		else if (dx < -50) nextService();
+	};
+
+	// ===============benefits carousel=====================
 	const benefits = [
 		{
 			title: 'Concierge Services:',
@@ -131,6 +222,24 @@
 				'Benefit from expedited VAT refunds at select international airports, making your travels smoother.'
 		}
 	];
+	let benefitIndex = 0;
+	let benefitStartX = 0;
+
+	const nextBenefit = () => {
+		benefitIndex = (benefitIndex + 1) % benefits.length;
+	};
+
+	const prevBenefit = () => {
+		benefitIndex = (benefitIndex - 1 + benefits.length) % benefits.length;
+	};
+
+	const handleBenefitStart = (e) => (benefitStartX = e.touches[0].clientX);
+
+	const handleBenefitEnd = (e) => {
+		let dx = e.changedTouches[0].clientX - benefitStartX;
+		if (dx > 50) prevBenefit();
+		else if (dx < -50) nextBenefit();
+	};
 
 	let scrollRef;
 
@@ -141,22 +250,33 @@
 	function scrollRight() {
 		scrollRef.scrollBy({ left: 300, behavior: 'smooth' });
 	}
+
+	let showForm = false;
+
+	// =========insight ============
+	let showInsight1 = false;
+	let showInsight2 = false;
+	let showInsight3 = false;
+	let showInsight4 = false;
+	let showInsight5 = false;
+	let showInsight6 = false;
 </script>
 
 <!-- ============================Hero section======================== -->
 <section
-	class="relative flex min-h-screen flex-col gap-20 overflow-x-hidden py-10"
+	class="relative flex min-h-screen flex-col gap-20 overflow-x-hidden py-0 lg:py-10"
 	style="background-image: url({HeroBackground}); background-size: cover; background-position: center; background-repeat: no-repeat;"
 >
 	<!-- Gradient overlay -->
 	<div class="absolute inset-0 z-0 bg-black opacity-20"></div>
 	<!-- navbar -->
 
-	<nav class="relative z-10 mx-5 flex items-center justify-between py-4 md:py-0">
+	<nav
+		class="relative z-10 flex items-center justify-between bg-[#181818] px-5 py-4 lg:bg-transparent lg:py-0"
+	>
 		<!-- Logo -->
 		<div class="cursor-pointer">
 			<a href="#"><img src={Logo} alt="logo" class="w-28 md:w-32" /></a>
-			
 		</div>
 
 		<!-- Desktop Links -->
@@ -193,12 +313,12 @@
 			</ul>
 			<div class="flex gap-5">
 				<a
-					href="#log-in"
+					on:click={() => (showForm = true)}
 					class="group grid h-[55px] w-[189px] place-items-center rounded-[10px] bg-[#D9D9D9] text-center text-[14px] font-[700] uppercase text-black transition-all duration-300 hover:scale-105 hover:opacity-95 hover:shadow-lg"
 					><span class="transition-all duration-300 group-hover:tracking-wider">LOG-IN</span></a
 				>
 				<a
-					href="#about"
+					on:click={() => (showForm = true)}
 					class="group grid h-[55px] w-[189px] place-items-center rounded-[10px] bg-[#D9D9D9] text-center text-[14px] font-[700] uppercase text-black transition-all duration-300 hover:scale-105 hover:opacity-95 hover:shadow-lg"
 					><span class="transition-all duration-300 group-hover:tracking-wider">Get Started</span
 					></a
@@ -235,14 +355,52 @@
 
 		<!-- Mobile Menu -->
 		{#if isOpen}
+			<!-- Backdrop -->
+			<!-- <div
+				in:fade
+				out:fade
+				class="fixed inset-0 z-[80] bg-black lg:hidden touch-none"
+				on:click={() => (isOpen = false)}
+			></div> -->
+
+			<!-- Sidebar -->
 			<div
-				class="fixed inset-0 z-[90] h-full w-[80%] max-w-[300px] overflow-y-auto bg-black p-5 shadow-lg lg:hidden pt-20"
+				class="max-w-screen fixed left-0 top-0 z-[90] h-full w-full translate-x-0 transform overflow-y-auto bg-black pt-0 shadow-lg transition-transform duration-300 lg:hidden"
 			>
-				<div class="mb-10 cursor-pointer ">
-					<a href="#"><img src={Logo} alt="logo" class="w-28 md:w-32" /></a>
-					
+				<div class="flex items-center justify-between bg-[#181818] px-5 py-4">
+					<!-- Logo -->
+					<div class="cursor-pointer">
+						<a href="#"><img src={Logo} alt="logo" class="w-28 md:w-32" /></a>
+					</div>
+					<button class="block focus:outline-none lg:hidden" on:click={() => (isOpen = false)}>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							class="h-8 w-8 cursor-pointer text-white"
+						>
+							{#if isOpen}
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M6 18L18 6M6 6l12 12"
+								/>
+							{:else}
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M4 6h16M4 12h16M4 18h16"
+								/>
+							{/if}
+						</svg>
+					</button>
 				</div>
-				<ul class="space-y-6 text-left text-[16px] font-medium text-white">
+
+				<!-- Nav Items -->
+				<ul class="space-y-10 px-4 py-6 text-left text-[16px] font-medium text-white">
 					<li>
 						<a
 							href="#how-it-works"
@@ -273,17 +431,15 @@
 					</li>
 					<li>
 						<a
-							href="#log-in"
-							class="group mx-auto block w-full max-w-[300px] rounded-[10px] bg-[#D9D9D9] px-4 py-2 text-center font-bold uppercase text-black transition-all duration-300 hover:scale-105 hover:opacity-95 hover:shadow-lg"
-							on:click={() => (isOpen = false)}
+							on:click={() => (showForm = true)}
+							class="group mx-auto block w-full max-w-[100%] border border-[#D9D9D9] px-4 py-2 text-center font-bold uppercase text-white transition-all duration-300 hover:scale-105 hover:opacity-95 hover:shadow-lg"
 							><span class="transition-all duration-300 group-hover:tracking-wider">LOG-IN</span></a
 						>
 					</li>
 					<li>
 						<a
-							href="#about"
-							class="group mx-auto block w-full max-w-[300px] rounded-[10px] bg-[#D9D9D9] px-4 py-2 text-center font-bold uppercase text-black transition-all duration-300 hover:scale-105 hover:opacity-95 hover:shadow-lg"
-							on:click={() => (isOpen = false)}
+							on:click={() => (showForm = true)}
+							class="group mx-auto block w-full max-w-[100%] bg-[#D9D9D9] px-4 py-2 text-center font-bold uppercase text-black transition-all duration-300 hover:scale-105 hover:opacity-95 hover:shadow-lg"
 							><span class="transition-all duration-300 group-hover:tracking-wider"
 								>Get Started</span
 							></a
@@ -293,6 +449,166 @@
 			</div>
 		{/if}
 	</nav>
+
+	<!-- =====================form section================================= -->
+	{#if showForm}
+		<div
+			class="max-w-screen no-scrollbar fixed left-0 top-0 z-[90] h-full w-full translate-x-0 transform overflow-y-auto bg-black px-8 py-10 shadow-lg transition-transform duration-300 lg:px-[20%]"
+		>
+			<!-- Close Button -->
+			<div class="mb-4 flex justify-end">
+				<button
+					on:click={() => (showForm = false)}
+					class="rounded-full border border-[#7C7C7C] p-3 text-[#7C7C7C] hover:border-white hover:text-white"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						class="h-6 w-6"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M6 18L18 6M6 6l12 12"
+						/>
+					</svg>
+				</button>
+			</div>
+			<div class="leading-none">
+				<h1 class="text-[64px] font-[316px] capitalize tracking-tight">Join ault</h1>
+				<p class="text-[16px] font-[442] capitalize text-[#A5A5A5]">
+					The journey to more start here
+				</p>
+			</div>
+
+			<div class="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
+				<div class="flex flex-col gap-2">
+					<label class="font-[442]" for="name">Full name</label>
+					<input
+						type="text"
+						placeholder="Gabriel onanosanya"
+						required
+						class="boder-[#FFFFFF2E] border bg-[#0B0C0E] text-[#FFFFFF75]"
+					/>
+				</div>
+				<div class="flex flex-col gap-2">
+					<label class="font-[442]" for="email">Email Address</label>
+					<input
+						type="text"
+						placeholder="david@blank.design"
+						required
+						class="boder-[#FFFFFF2E] border bg-[#0B0C0E] text-[#FFFFFF75]"
+					/>
+				</div>
+				<div class="flex flex-col gap-2">
+					<label class="font-[442]" for="number">Phone Number</label>
+					<input
+						type="text"
+						placeholder="0123456789"
+						required
+						class="boder-[#FFFFFF2E] border bg-[#0B0C0E] text-[#FFFFFF75]"
+					/>
+				</div>
+			</div>
+
+			<div class="flex flex-col gap-8 py-8">
+				<div class="flex flex-col gap-5">
+					<div class="flex gap-3 text-[14px] font-[442] capitalize tracking-tight">
+						<div>what are you interested in ?</div>
+						<div class="text-[#E9E9E9CC]">(Select all that apply)</div>
+					</div>
+					<div class="ml-3 space-y-3">
+						<div class="flex items-center gap-2">
+							<input
+								type="checkbox"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">Buying and Holding Gold</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<input
+								type="checkbox"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">Leasing Gold</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<input
+								type="checkbox"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">Credit Solutions</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<input
+								type="checkbox"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">AULT Mastercard</div>
+						</div>
+					</div>
+				</div>
+				<div class="flex flex-col gap-5">
+					<div class="text-[14px] font-[442] capitalize tracking-tight">
+						Do You Already Own Physical or Tokenized Gold?
+					</div>
+					<div class="ml-3 flex gap-10">
+						<div class="flex items-center gap-2">
+							<input
+								type="radio"
+								name="own_gold"
+								value="yes"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">Yes</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<input
+								type="radio"
+								name="own_gold"
+								value="no"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">No</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex flex-col gap-5">
+					<div class="text-[14px] font-[442] capitalize tracking-tight">
+						Do You Have A ProvidusBank Account?
+					</div>
+					<div class="ml-3 flex gap-10">
+						<div class="flex items-center gap-2">
+							<input
+								type="radio"
+								name="providus_account"
+								value="yes"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">Yes</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<input
+								type="radio"
+								name="providus_account"
+								value="no"
+								class="rounded-[4px] bg-transparent outline-black transition-all duration-300 checked:border-transparent checked:bg-[#FFCC00] checked:text-black focus:ring-0"
+							/>
+							<div class="text-[14px] font-[316] text-[#E9E9E9CC]">No</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<button
+				class="mx-auto h-[40px] w-full max-w-[350px] bg-white text-center font-bold uppercase text-black"
+				on:click={() => (showForm = false)}>REQUEST YOUR INVITATION</button
+			>
+		</div>
+	{/if}
 
 	<!-- hero content -->
 	<div class="relative z-[1] mx-5 flex flex-col gap-5 text-center">
@@ -349,27 +665,42 @@
 			BEYOND WEALTH. BEYOND GOLD.
 		</h1>
 
+		<div>
 		<!-- Carousel for small screens only -->
-		<div class="relative h-[300px] md:hidden">
-			<div class="absolute left-0 right-0">
-				<div
-					class="no-scrollbar -mx-4 snap-x snap-mandatory overflow-x-auto scroll-smooth px-4 md:hidden"
-				>
-					<div class="flex w-max gap-4">
-						{#each features as feature}
-							<div class="w-[288px] flex-shrink-0 snap-start rounded-[4px] bg-[#181818] p-4">
-								<img src={feature.image} alt={feature.title} class="mx-auto mb-4 w-[165px]" />
-								<h3 class="text-[25px] font-bold text-white">{feature.title}</h3>
-								<p class="text-sm text-white/80">{feature.description}</p>
-							</div>
-						{/each}
+		<div class="relative w-full overflow-hidden md:block lg:hidden">
+			<!-- Slider wrapper -->
+			<div
+				class="flex transition-transform duration-500 ease-in-out"
+				style="transform: translateX({-currentIndex * 100}%);"
+				on:touchstart={handleTouchStart}
+				on:touchend={handleTouchEnd}
+			>
+				{#each features as feature}
+					<div class="w-full flex-shrink-0 px-2 md:w-1/2" style="width: calc(100% / {perView})">
+						<div class="h-[305px] rounded-[4px] bg-[#181818] p-4 flex flex-col justify-between">
+							<img src={feature.image} alt={feature.title} class="mx-auto mb-4 w-[165px]" />
+							<h3 class="text-[25px] font-bold text-white">{feature.title}</h3>
+							<p class="text-sm text-white/80">{feature.description}</p>
+						</div>
 					</div>
-				</div>
+				{/each}
+			</div>
+
+			<!-- Pagination Dots -->
+			<div class="mt-4 flex justify-center gap-2">
+				{#each Array(slideCount) as _, i}
+					<button
+						on:click={() => goTo(i)}
+						class="h-2 w-2 rounded-full transition-all duration-300"
+						class:bg-white={i === currentIndex}
+						class:bg-gray-500={i !== currentIndex}
+					></button>
+				{/each}
 			</div>
 		</div>
 
 		<!-- Grid layout for desktop -->
-		<div class="hidden grid-cols-2 gap-8 md:grid lg:grid-cols-3">
+		<div class="hidden grid-cols-2 gap-8 lg:grid lg:grid-cols-3">
 			{#each features as feature (feature.title)}
 				<div class="space-y-4 rounded-[4px] bg-[#181818] p-4">
 					<div class="mx-auto max-w-[152px]">
@@ -381,6 +712,7 @@
 					</div>
 				</div>
 			{/each}
+		</div>
 		</div>
 	</div>
 </section>
@@ -427,24 +759,45 @@
 			</div>
 
 			<!-- Mobile Carousel -->
-			<div
-				class="no-scrollbar mx-2 snap-x snap-mandatory overflow-x-auto scroll-smooth px-4 lg:hidden"
-			>
-				<div class="flex w-max gap-4">
-					{#each steps as step}
+			<div class="relative w-full overflow-hidden lg:hidden">
+				<!-- Swipeable Steps Wrapper -->
+				<div
+					class="flex transition-transform duration-500 ease-in-out"
+					style="transform: translateX({-stepsIndex * 100}%);"
+					on:touchstart={handleStepStart}
+					on:touchend={handleStepEnd}
+				>
+					{#each steps as step (step.title)}
 						<div
-							class="flex w-[288px] flex-shrink-0 snap-start flex-col gap-9 rounded-[16px] bg-[#000000] p-4"
+							class="w-full flex-shrink-0 px-2 md:w-1/2"
+							style="width: calc(100% / {stepPerView})"
 						>
-							<div class="flex gap-1">
-								{#each Array(step.dots) as _}
-									<div class="-mt-1 h-3 w-3 rounded-full bg-[#7D7D7D]"></div>
-								{/each}
-							</div>
-							<div class="grid gap-2">
-								<h3 class="text-[16px] font-semibold capitalize">{step.title}</h3>
-								<p class="text-[14px] font-light">{step.description}</p>
+							<div
+								class="flex h-[240px] flex-col justify-center gap-9 rounded-[16px] bg-[#000000] p-4"
+							>
+								<div class="flex gap-1">
+									{#each Array(step.dots) as _}
+										<div class="-mt-1 h-3 w-3 rounded-full bg-[#7D7D7D]"></div>
+									{/each}
+								</div>
+								<div class="grid gap-2">
+									<h3 class="text-[16px] font-semibold capitalize">{step.title}</h3>
+									<p class="text-[14px] font-light">{step.description}</p>
+								</div>
 							</div>
 						</div>
+					{/each}
+				</div>
+
+				<!-- Pagination Dots -->
+				<div class="mt-4 flex justify-center gap-2">
+					{#each Array(stepSlideCount) as _, i}
+						<button
+							on:click={() => goToStep(i)}
+							class="h-2 w-2 rounded-full transition-all duration-300"
+							class:bg-white={i === stepsIndex}
+							class:bg-gray-500={i !== stepsIndex}
+						></button>
 					{/each}
 				</div>
 			</div>
@@ -464,10 +817,10 @@
 	style="background-image: url({CardBackground}); background-size: cover; background-position: center; background-repeat: no-repeat;"
 >
 	<div
-	class="absolute bottom-[-1rem] z-10 mx-auto left-0 right-0 max-w-[276px] gap-9 object-contain lg:bottom-[1rem] lg:right-[1rem] lg:left-auto lg:mx-0 xl:max-w-[522.2px]"
->
-	<img src={AultOnGold} alt="ault-on-gold" class="w-full" />
-</div>
+		class="absolute bottom-[-1rem] left-0 right-0 z-10 mx-auto max-w-[276px] gap-9 object-contain lg:bottom-[1rem] lg:left-auto lg:right-[1rem] lg:mx-0 xl:max-w-[522.2px]"
+	>
+		<img src={AultOnGold} alt="ault-on-gold" class="w-full" />
+	</div>
 	<div
 		class="uppecase relative z-0 hidden text-[18vw] font-[200] tracking-[0.03em] text-[#181818] lg:block"
 	>
@@ -505,24 +858,53 @@
 			Unparalleled service that combines security, flexibility, and exclusivity tailored for you.
 		</h1>
 		<!-- Carousel (small screens only) -->
-		<div
-			class="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-10 md:hidden"
-		>
-			{#each services as item}
-				<div class="flex w-[288px] shrink-0 snap-start flex-col gap-5 p-4">
-					<div class="h-[180px] w-full overflow-hidden rounded">
-						<img src={item.image} alt="service" class="h-full w-full object-cover object-center" />
+		<div class="relative w-full overflow-hidden lg:hidden">
+			<!-- Services swipeable wrapper -->
+			<div
+				class="flex transition-transform duration-500 ease-in-out"
+				style="transform: translateX({-servicesIndex * 100}%);"
+				on:touchstart={handleServiceStart}
+				on:touchend={handleServiceEnd}
+			>
+				{#each services as service}
+					<div
+						class="w-full flex-shrink-0 px-2 md:w-1/2"
+						style="width: calc(100% / {perViewService})"
+					>
+						<div class="flex max-h-[448px] flex-col gap-5 rounded-[4px] bg-[#181818] p-4">
+							<div class="h-[280px] w-full overflow-hidden rounded">
+								<img
+									src={service.image}
+									alt="service"
+									class="h-full w-full object-cover object-center"
+								/>
+							</div>
+							<div class="max-w-[320px] text-[14px] text-white md:w-auto lg:text-[20px]">
+								<h3 class="font-semibold capitalize tracking-normal">{service.title}</h3>
+								<p class="font-light capitalize leading-relaxed tracking-normal text-white/80">
+									{service.description}
+								</p>
+							</div>
+						</div>
 					</div>
-					<div class="text-[14px] lg:text-[20px]">
-						<h3 class="font-semibold capitalize tracking-normal">{item.title}</h3>
-						<p class="font-light capitalize leading-relaxed tracking-normal">{item.description}</p>
-					</div>
-				</div>
-			{/each}
+				{/each}
+			</div>
+
+			<!-- Pagination Dots -->
+			<div class="mt-4 flex justify-center gap-2">
+				{#each Array(serviceSlideCount) as _, i}
+					<button
+						on:click={() => goToService(i)}
+						class="h-2 w-2 rounded-full transition-all duration-300"
+						class:bg-white={i === servicesIndex}
+						class:bg-gray-500={i !== servicesIndex}
+					></button>
+				{/each}
+			</div>
 		</div>
 
 		<!-- for desktop -->
-		<div class="hidden grid-cols-1 gap-20 md:grid md:grid-cols-2 md:grid-cols-3">
+		<div class="hidden grid-cols-1 gap-20 lg:grid lg:grid-cols-3">
 			{#each services as item}
 				<div class="flex h-full w-full flex-col gap-5 overflow-hidden">
 					<div class="h-full max-h-[286px] w-full overflow-hidden">
@@ -546,7 +928,7 @@
 	<div class="grid place-items-center gap-10 lg:grid-cols-2">
 		<!-- IMAGE SECTION -->
 		<div class="order-2 lg:order-1">
-			<div class="relative flex max-h-[470px] w-full lg:h-auto lg:w-[496px]">
+			<div class="relative hidden max-h-[470px] w-full lg:flex lg:h-auto lg:w-[496px]">
 				<img src={BenefitImg} alt="benefit-img" class="w-full lg:w-[367px]" />
 				<img
 					src={BenefitImg2}
@@ -565,7 +947,7 @@
 			<div class="ml-auto block gap-2 text-right lg:hidden">
 				<!-- Left Arrow -->
 				<button
-					on:click={scrollLeft}
+					on:click={prevBenefit}
 					class="cursor-pointer rounded-full bg-white p-2 text-black backdrop-blur-md lg:hidden"
 					aria-label="Scroll Left"
 				>
@@ -587,7 +969,7 @@
 
 				<!-- Right Arrow -->
 				<button
-					on:click={scrollRight}
+					on:click={nextBenefit}
 					class="cursor-pointer rounded-full bg-white p-2 text-black backdrop-blur-md lg:hidden"
 					aria-label="Scroll Right"
 				>
@@ -610,20 +992,22 @@
 
 			<!-- Carousel for small screens -->
 			<div class="relative h-[130px] lg:hidden">
-				<div class="absolute left-0 right-0">
-					<div
-						bind:this={scrollRef}
-						class="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 lg:hidden"
-					>
-						{#each benefits as benefit}
+				<div
+					class="duration-600 flex transition-transform ease-in-out"
+					style="transform: translateX(-{benefitIndex * 100}%);"
+					on:touchstart={handleBenefitStart}
+					on:touchend={handleBenefitEnd}
+				>
+					{#each benefits as benefit}
+						<div class="w-full flex-shrink-0 px-4" style="width: 100%">
 							<div
-								class="flex w-[288px] shrink-0 snap-start flex-col space-y-[4px] rounded-[6px] bg-[#000000] p-4 text-[14px] font-[571] capitalize"
+								class="flex h-full w-[288px] flex-col space-y-[4px] rounded-[6px] bg-[#000000] p-4 text-[14px] font-[571] capitalize"
 							>
 								<p>{benefit.title}</p>
 								<span class="font-[200] normal-case">{benefit.description}</span>
 							</div>
-						{/each}
-					</div>
+						</div>
+					{/each}
 				</div>
 			</div>
 
@@ -646,34 +1030,45 @@
 	class="item-center relative flex min-h-screen flex-col justify-center gap-20 overflow-x-hidden bg-[#181818] px-5 py-10 md:px-20 md:py-20"
 >
 	<div
-		class="flex min-h-[284px] flex-col justify-center gap-5 rounded-[46px] px-0 py-10 lg:gap-10 lg:px-20"
+		class="flex min-h-[284px] flex-col justify-between gap-5 px-0 py-10 lg:flex-row lg:gap-20 lg:px-0"
 	>
-		<h1 class="3xl:text-[60px] text-[32px] font-[316] uppercase lg:text-[35px] xl:text-[50px]">
-			OUR PARTNERS
-		</h1>
-		<p class="3xl:text-[36px] text-[24px] font-[316] lg:w-[907px] lg:text-[25px]">
-			Our commitment to you is founded on trusted partnerships and a shared dedication to managing
-			your assets with the highest standards of security, transparency, and personalized
-			flexibility.
-		</p>
-		<div class="lg:ml-55 ml-5 mt-10 flex flex-col gap-10 lg:mt-0 lg:flex-row lg:gap-20">
-			<div class="flex flex-col gap-2 text-[20px] font-[571]">
-				<h3>Emerging Africa</h3>
-				<p class="text-[16px] font-[316] text-[#FFFFFFCC] lg:w-[312px]">
-					Oversees fiduciary responsibilities, safeguarding your gold assets with exceptional care
-					and strict regulatory compliance.
-				</p>
-			</div>
-			<div class="flex flex-col gap-2 text-[20px] font-[571]">
-				<h3>Providus Bank</h3>
-				<p class="font-[316] text-[#FFFFFFCC] lg:w-[312px]">
-					Provides reliable and efficient card solutions, ensuring your funds remain secure,
-					accessible, and available whenever you need them.
-				</p>
+		<div class="flex flex-col justify-between gap-7">
+			<p class="3xl:text-[36px] text-[24px] font-[316] lg:max-w-[907px] lg:text-[25px]">
+				Our commitment to you is founded on trusted partnerships and a shared dedication to managing
+				your assets with the highest standards of security, transparency, and personalized
+				flexibility.
+			</p>
+			<div class="hidden max-h-[294px] max-w-[908px] lg:block">
+				<img src={PartnerImg} alt="Partner-img" class="h-full w-full" />
 			</div>
 		</div>
-		<div class="ml-auto max-w-[677px]">
-			<img src={AultGold} alt="ault-gold" class="w-full" />
+		<div
+			class="ml-5 mt-10 flex flex-col justify-between gap-10 md:flex-row lg:ml-0 lg:mt-0 lg:flex-col lg:gap-2"
+		>
+			<div class="flex max-w-[378px] flex-col gap-5 text-[20px] font-[571]">
+				<div class="max-w-[159px]">
+					<img src={Partner4} alt="partner" class="w-full" />
+				</div>
+				<h3>
+					Emerging Africa
+					<span class="ml-1 text-[16px] font-[316] text-[#FFFFFFCC] lg:w-[312px]">
+						Oversees fiduciary responsibilities, safeguarding your gold assets with exceptional care
+						and strict regulatory compliance.
+					</span>
+				</h3>
+			</div>
+			<div class="flex max-w-[378px] flex-col gap-5 text-[20px] font-[571]">
+				<div class="max-w-[132px] opacity-[60%]">
+					<img src={Partner1} alt="partner" class="w-full" />
+				</div>
+				<h3>
+					Providus Bank
+					<span class="ml-1 text-[16px] font-[316] text-[#FFFFFFCC] lg:w-[312px]">
+						Provides reliable and efficient card solutions, ensuring your funds remain secure,
+						accessible, and available whenever you need them.
+					</span>
+				</h3>
+			</div>
 		</div>
 	</div>
 </section>
@@ -699,24 +1094,104 @@
 		</h1>
 
 		<div class="flex flex-col gap-3 text-[16px] lg:text-[20px]">
-			<div class="cursor-pointer rounded-[8px] border border-white">
+			<div
+				class="cursor-pointer rounded-[8px] border-[3px] border-[#FFFFFF24]"
+				on:click={() => (showInsight1 = !showInsight1)}
+			>
 				<p class="p-3 font-[442]">What is AULT?</p>
+				{#if showInsight1}
+					<p class="p-3 font-[442]">
+						AULT is an exclusive concierge service designed to provide seamless access to
+						gold-backed financial services, allowing the purchase, management, and spend of gold
+						assets securely, with flexibility and ease.
+					</p>
+				{/if}
 			</div>
-			<div class="cursor-pointer rounded-[8px] border border-white">
-				<p class="p-3 font-[442]">What do I need to get started?</p>
+
+			<div
+				class="cursor-pointer rounded-[8px] border-[3px] border-[#FFFFFF24]"
+				on:click={() => (showInsight6 = !showInsight6)}
+			>
+				<p class="p-3 font-[442]">Why Gold?</p>
+				{#if showInsight6}
+					<p class="p-3 font-[442]">
+						Gold is a stable, long-term asset with a proven track record of preserving value across
+						economic fluctuations. Unlike traditional currencies or investments, gold offers a
+						tangible hedge against uncertainty and market volatility, providing security and
+						liquidity.
+					</p>
+				{/if}
 			</div>
-			<div class="cursor-pointer rounded-[8px] border border-white">
-				<p class="p-3 font-[442]">Do I need to sell my gold to spend it?</p>
+			<div
+				class="cursor-pointer rounded-[8px] border-[3px] border-[#FFFFFF24]"
+				on:click={() => (showInsight2 = !showInsight2)}
+			>
+				<p class="p-3 font-[442]">How Do I Fund My AULT Account?</p>
+				{#if showInsight2}
+					<p class="p-3 font-[442]">
+						You can fund your AULT account by transferring fiat currency (USD, EUR, NGN) through our
+						secure platform. Once the funds are received, we will purchase the gold on your behalf.
+						All gold purchased is securely stored in LBMA-certified vaults in London, Zurich, or the
+						UAE.
+					</p>
+				{/if}
 			</div>
-			<div class="cursor-pointer rounded-[8px] border border-white">
-				<p class="p-3 font-[442]">What are the benefits of the AULT Mastercard?</p>
+			<div
+				class="cursor-pointer rounded-[8px] border-[3px] border-[#FFFFFF24]"
+				on:click={() => (showInsight3 = !showInsight3)}
+			>
+				<p class="p-3 font-[442]">How Do I Access My Gold?</p>
+				{#if showInsight3}
+					<p class="p-3 font-[442]">
+						Once your account is active, access your gold via the AULT web app, liquidate it, and
+						spend it using your AULT Mastercard. The entire process of liquidating your allocated
+						gold is supported by robust technology infrastructure and is audited by KPMG LLP for
+						added assurance.
+					</p>
+				{/if}
 			</div>
-			<div class="cursor-pointer rounded-[8px] border border-white">
-				<p class="p-3 font-[442]">What are the benefits of the AULT Mastercard?</p>
+			<div
+				class="cursor-pointer rounded-[8px] border-[3px] border-[#FFFFFF24]"
+				on:click={() => (showInsight4 = !showInsight4)}
+			>
+				<p class="p-3 font-[442]">How Is My Gold Stored?</p>
+				{#if showInsight4}
+					<p class="p-3 font-[442]">
+						Your gold is securely stored in insured vaults in London, Zurich, and the UAE. These
+						vaults meet international standards of security and compliance, ensuring your assets are
+						safe and protected.
+					</p>
+				{/if}
 			</div>
-			<div class="cursor-pointer rounded-[8px] border border-white">
-				<p class="p-3 font-[442]">What are the benefits of the AULT Mastercard?</p>
+			<div
+				class="cursor-pointer rounded-[8px] border-[3px] border-[#FFFFFF24]"
+				on:click={() => (showInsight5 = !showInsight5)}
+			>
+				<p class="p-3 font-[442]">Do I Need To Sell My Gold To Spend It?</p>
+				{#if showInsight5}
+					<p class="p-3 font-[442]">
+						No, you don’t need to sell your gold. AULT has partnered with regulated financial
+						entities, allowing you to spend your gold directly anywhere in the world using the AULT
+						Mastercard.
+					</p>
+				{/if}
 			</div>
+		</div>
+		<div
+			class="ml-auto flex cursor-pointer items-center gap-3 text-[14px] font-[200] tracking-tight lg:text-[32px] lg:font-[316]"
+		>
+			Learn more
+			<svg
+				viewBox="0 0 20 12"
+				fill="currentColor"
+				xmlns="http://www.w3.org/2000/svg"
+				class="h-2 w-8 rotate-180 text-white lg:h-5 lg:w-10"
+			>
+				<path
+					d="M9.84281 11.9019C10.1028 11.7642 10.2649 11.5023 10.2649 11.2175V6.7825H19.1841C19.6345 6.7825 20 6.43195 20 6.00003C20 5.56811 19.6345 5.21756 19.1841 5.21756H10.2649V0.782525C10.2649 0.496663 10.1028 0.234796 9.84281 0.0981252C9.58281 -0.0406327 9.26516 -0.0312431 9.01387 0.120034L0.380745 5.33754C0.143595 5.48151 0 5.73086 0 6.00003C0 6.2692 0.143595 6.51854 0.380745 6.66252L9.01387 11.88C9.14659 11.9593 9.2978 12 9.44901 12C9.5839 12 9.71988 11.9666 9.84281 11.9019Z"
+					class="icon-path"
+				/>
+			</svg>
 		</div>
 	</div>
 </section>
@@ -737,7 +1212,7 @@
 					begins here.
 				</p>
 			</div>
-			<p class="uppercase">BUSINESs@goAULT.COM</p>
+			<p class="uppercase">Partnerships@goAULT.COM</p>
 		</div>
 	</div>
 	<div class="w-full">
